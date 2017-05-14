@@ -1,0 +1,7 @@
+# Hibernate Templates
+
+Description
+Only purpose is to enhance knowledge on Spring DAO templates and share it plublicly. Following Spring In Action and other sources on internet to have a Maven project that can be used further to start a new project in which hibernate is already configured.
+
+Initially, starting with simple hibernate enabled module with no spring in it. Then, introduce spring and hibernate template. Following DAS concept. Finally, @Repositary annotation. 
+
