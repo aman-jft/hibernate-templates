@@ -1,7 +1,16 @@
-# Hibernate Templates
+# Hibernate Templates without Spring
 
-Description
-Only purpose is to enhance knowledge on Spring DAO templates and share it plublicly. Following Spring In Action and other sources on internet to have a Maven project that can be used further to start a new project in which hibernate is already configured.
+Added hibernate and h2 dependencies. Added an Entity class : User. Had a configuration in resources. There is one utility class : HibernateTemplate which is kind of homemade template which will execute query. I have used java 8 function interface to implement template pattern. 
+ 
+	public static void runQuery(SessionFactory sf, Consumer<Session> consumer) {
+		Session session = sf.openSession();      	// Open a new session.
+		session.beginTransaction();			
+		consumer.accept(session);			// Here query runs.
+		session.getTransaction().commit();
+		session.close();
+	}
 
-Initially, starting with simple hibernate enabled module with no spring in it. Then, introduce spring and hibernate template. Following DAS concept. Finally, @Repositary annotation. 
+
+It is somehow similar to what Spring does in templating. However Spring has lot of things beneficial out of the box like data access exception hierarchy, DAO support class and a easy way to execute queries. Then lets see it with Spring templates.
+
 
