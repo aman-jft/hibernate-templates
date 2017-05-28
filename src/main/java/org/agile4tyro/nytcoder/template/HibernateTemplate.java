@@ -10,10 +10,16 @@ import org.hibernate.SessionFactory;
  */
 public class HibernateTemplate {
 	public static void runQuery(SessionFactory sf, Consumer<Session> consumer) {
-		Session session = sf.openSession();
-		session.beginTransaction();
-		consumer.accept(session);
-		session.getTransaction().commit();
-		session.close();
+		Session session = sf.getCurrentSession();
+		boolean currentState = session.getTransaction().isActive();
+		if(!currentState) {
+			session.beginTransaction();
+		}
+			consumer.accept(session);
+		if(!currentState) {
+			session.getTransaction().commit();
+			session.close();
+		}
+
 	}
 }

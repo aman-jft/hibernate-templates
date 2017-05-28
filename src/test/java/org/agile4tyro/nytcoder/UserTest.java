@@ -2,7 +2,6 @@ package org.agile4tyro.nytcoder;
 
 import org.agile4tyro.nytcoder.db.User;
 import org.agile4tyro.nytcoder.template.HibernateTemplate;
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.FixMethodOrder;
@@ -13,6 +12,15 @@ import junit.framework.TestCase;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class UserTest extends TestCase {
 	private final static SessionFactory sessionFactory = HibernateConfig.getConfiguration();
+
+
+	public void test0_CurrentSession() {
+		try {
+			Session session = sessionFactory.getCurrentSession();
+		} catch (Exception e) {
+			fail("Should not have thrown Hibernate exception");
+		}
+	}
 
 	public void test1_Connection() {
 		HibernateTemplate.runQuery(sessionFactory, (Session session) -> {
@@ -57,10 +65,9 @@ public class UserTest extends TestCase {
 			assertNotNull(dbUser);
 			assertEquals(user.getUsername(), dbUser.getUsername());
 
-			// Open new session
+			// Open new session but it will going to return same session
 			HibernateTemplate.runQuery(sessionFactory, (Session newSession) -> {
-				User testUser = (User) newSession.createQuery("FROM User").uniqueResult();
-				assertNull(testUser);
+				assertEquals(session, newSession);
 			});
 		});
 		HibernateTemplate.runQuery(sessionFactory, (Session session) -> {
@@ -72,13 +79,21 @@ public class UserTest extends TestCase {
 		});
 	}
 
-	public void test4_CurrentSession() {
-		try {
-			Session session = sessionFactory.getCurrentSession();
-			fail("Should have thrown Hibernate exception");
-		} catch (Exception e) {
-			assertTrue(e instanceof HibernateException);
-		}
+	public void test4_Threads() {
+		HibernateTemplate.runQuery(sessionFactory, (Session session) -> {
+			// Start a new thread and then try to get session object, will it be same?
+			Thread t = new Thread() {
+				public void run() {
+					HibernateTemplate.runQuery(sessionFactory, (Session newSession) -> {
+						assertNotSame(session, newSession);
+					});
+				}
+			};
+			t.start();
+			try {
+				t.join();
+			}catch (Exception e) {}
+		});
 	}
 
 }

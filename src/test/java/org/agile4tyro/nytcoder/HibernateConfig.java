@@ -16,7 +16,7 @@ public class HibernateConfig {
 		.setProperty("hibernate.connection.driver_class", "org.h2.Driver")
 		.setProperty("hibernate.connection.url", "jdbc:h2:mem:Template1")
 		.setProperty("hibernate.hbm2ddl.auto", "create-drop")
-		.setProperty("show_sql", "true")
+		.setProperty("hibernate.current_session_context_class", "thread")
 			.addAnnotatedClass(User.class)
 			.buildSessionFactory();
 	}
